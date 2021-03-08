@@ -1,10 +1,19 @@
 const {
-  topicData,
-  articleData,
-  commentData,
-  userData,
-} = require('../data/index.js');
+  topicsData,
+  articlesData,
+  commentsData,
+  usersData
+} = require('../data/index');
 
 exports.seed = function (knex) {
-  // add seeding functionality here
+  return knex.migrate
+    .rollback()
+    .then(() => knex.migrate.latest())
+    .then(() => {
+      return knex
+        .insert(usersData)
+        .into('users')
+        .returning('*')
+        .then((insertedUsers) => {});
+    });
 };
