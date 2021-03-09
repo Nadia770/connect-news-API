@@ -5,11 +5,11 @@ const dbConnection = require('./db/dbConnection')
 
 afterAll(()=>
     dbConnection.destroy()
-)
+);
 
 beforeEach(()=>
     dbConnection.seed.run()
-)
+);
 
 describe('/api', ()=>{
     describe('/topics', ()=>{
@@ -26,7 +26,7 @@ describe('/api', ()=>{
                     })
                 })
             })
-            it("status:200, return specific username", ()=>{
+            it("status:200, return specific user by username", ()=>{
                 return request(app)
                 .get('/api/users/lurker')
                 .expect(200)

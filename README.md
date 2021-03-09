@@ -169,7 +169,7 @@ GET /api/topics
 
 
 ```http
-GET /api/users/:username
+GET /api/r/:username
 ```
 
 #### Responds with

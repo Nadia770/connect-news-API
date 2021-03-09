@@ -3,7 +3,7 @@ const {getTopics} = require('../Controllers/topicsController')
 
 
 
-topicsRouter.route('/').get(getTopics)
+topicsRouter.get('/', getTopics)
 
 
 module.exports = topicsRouter
