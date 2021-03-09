@@ -40,7 +40,24 @@ describe('/api', ()=>{
 
                 })
             })
-
+            it("status:200, return specific article by article_id", ()=>{
+              return request(app)
+              .get('/api/articles/:article_id')
+              .expect(200)
+              .then(({body})=>{
+                  expect(Array.isArray(body.articles)).toBe(true)
+                  expect(body.articles[0]).toMatchObject({
+                      author: expect.any(String),
+                      title: expect.any(String),
+                      article_id: expect.any(String),
+                      body: expect.any(String),
+                      topic: expect.any(String),
+                      created_at: expect.any(String),
+                      votes: expect.any(Number),
+                      comment_count: expect.any(Number)
+                  })
+                })
+              })
         })
     })
 })
