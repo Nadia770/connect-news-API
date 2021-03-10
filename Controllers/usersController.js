@@ -1,9 +1,13 @@
-const {fetchUsers} = require('../Models/usersModel')
+const {fetchUsersByUsername} = require('../Models/usersModel')
 
 
-exports.getUsers =(req, res, next)=>{
+exports.getUsersByUsername =(req, res, next)=>{
     const username = req.params.username
-    fetchUsers(username).then((users)=>{
+    fetchUsersByUsername(username).then((users)=>{
+      if(!users.length){
+        res.status(404).send({message: `No username with name: ${username}`})
+      }else {
         res.status(200).send({users})
-    })
-}
+      }
+   })
+};
