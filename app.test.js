@@ -63,22 +63,24 @@ describe('/api', ()=>{
               .get('/api/articles/1')
               .expect(200)
               .then(({body})=>{
+                console.log(body.articles)
                   expect(Array.isArray(body.articles)).toBe(true)
-                  expect(body.articles[0]).toMatchObject(
+                  expect(body.articles[0]).toMatchObject({
                       author: expect.any(String),
                       title: expect.any(String),
-                      article_id: expect.any(String),
+                      article_id: expect.any(Number),
                       body: expect.any(String),
                       topic: expect.any(String),
                       created_at: expect.any(String),
                       votes: expect.any(Number),
-                      comment_count: expect.any(Number)
+                      comment_count: expect.any(String)
                   })
                 })
               })
   
         })
       })
+    
  })
      
         

@@ -1,12 +1,17 @@
 const dbConnection = require('../db/dbConnection')
 
-exports.fetchArticles = (article_id)=>{
-    return dbConnection.select('*')
+exports.fetchArticlesById = (article_id)=>{
+    return dbConnection
+    .select('articles.author',
+            'articles.title', 
+            'articles.article_id', 
+            'articles.body', 
+            'articles.topic', 
+            'articles.created_at',
+            'articles.votes')
+    .count('comments.comment_id as comment_count')
     .from('articles')
-    .count({ total_count: 'film_id' })
-    .leftjoin('comments', 'comments.article_id', '=', 'articles.article_id')
-    .where('article_id', article_id)
-    .then((article)=>{
-        console.log(article)
-    })
+    .leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
+    .groupBy("articles.article_id")
+    .where('articles.article_id', article_id)
 }
