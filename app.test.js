@@ -10,7 +10,7 @@ beforeEach(()=> dbConnection.seed.run());
 describe('/api', ()=>{
     describe('/topics', ()=>{
         describe('GET', ()=>{
-            it("status:200, return topics", ()=>{
+            it("status: 200, return topics", ()=>{
               //process is asyc, return is written to inform jest
               //to perform assertions after the promise is resolved
                 return request(app)
@@ -24,11 +24,24 @@ describe('/api', ()=>{
                     })
                 })
             })
+            describe('Error', ()=>{
+              it("status: 405, rejects invalid methods", ()=>{
+                const invalidMethods = ['patch', 'put', 'delete']
+                const methodPromises = invalidMethods.map((method)=>{
+                  return request(app)
+                  [method]('/api/topics')
+                  .expect(405)
+                  .then(({body:{msg}})=>{
+                    expect(msg).toBe("Invalid method")
+                  })
+              })
+              return Promise.all(methodPromises)
+            })
         })
     })   
     describe('/users', ()=>{
       describe('/GET', ()=>{
-        it("status:200, return specific user by username", ()=>{
+        it("status: 200, return specific user by username", ()=>{
             return request(app)
             .get('/api/users/lurker')
             .expect(200)
@@ -43,7 +56,7 @@ describe('/api', ()=>{
             })
         })
         describe('Error', ()=>{
-          it("status 404: valid username which is not present ", ()=>{
+          it("status: 404, valid username which is not present ", ()=>{
               return request(app)
               .get('/api/users/reindeer')
               .expect(404)
@@ -51,12 +64,24 @@ describe('/api', ()=>{
                   expect(msg).toBe('username does not exist')
               })
            })
-        })
+           it("status: 405, rejects invalid methods", ()=>{
+            const invalidMethods = ['patch', 'put', 'delete']
+            const methodPromises = invalidMethods.map((method)=>{
+              return request(app)
+              [method]('/api/users/lurkers')
+              .expect(405)
+              .then(({body:{msg}})=>{
+                expect(msg).toBe("Invalid method")
+              })
+             })
+          return Promise.all(methodPromises)
+            })
+          })
        })
       })
       describe("/articles", ()=>{
         describe('GET', ()=>{
-          it("status:200, return specific article by article_id", ()=>{
+          it("status: 200, return specific article by article_id", ()=>{
               return request(app)
               .get('/api/articles/1')
               .expect(200)
@@ -92,9 +117,21 @@ describe('/api', ()=>{
                 expect(msg).toBe('Bad request')
              })
             })
+            it("status: 405, rejects invalid methods", ()=>{
+              const invalidMethods = ['put', 'delete']
+              const methodPromises = invalidMethods.map((method)=>{
+                return request(app)
+                [method]('/api/articles/2')
+                .expect(405)
+                .then(({body:{msg}})=>{
+                  expect(msg).toBe("Invalid method")
+                })
+               })
+                return Promise.all(methodPromises)
+            })
           })
           describe('PATCH', ()=>{
-            it("Status 200: Increment the current article's vote property by 7 ", ()=>{
+            it("Status: 200, Increment the current article's vote property by 7 ", ()=>{
               return request(app)
               .patch('/api/articles/2')
               .send({inc_votes: 7})
@@ -103,7 +140,7 @@ describe('/api', ()=>{
                 expect(body.articles[0].votes).toBe(7)
               })
             })
-            it("Status 200: Decrement the current article's vote property by 5 ", ()=>{
+            it("Status: 200, Decrement the current article's vote property by 5 ", ()=>{
               return request(app)
               .patch('/api/articles/3')
               .send({inc_votes: -5})
@@ -139,6 +176,18 @@ describe('/api', ()=>{
                 .then(({body: {msg}})=>{
                   expect(msg).toBe('Bad request')
                })
+              })
+              it("status: 405, rejects invalid methods", ()=>{
+                const invalidMethods = ['put', 'delete']
+                const methodPromises = invalidMethods.map((method)=>{
+                  return request(app)
+                  [method]('/api/articles/2')
+                  .expect(405)
+                  .then(({body:{msg}})=>{
+                    expect(msg).toBe("Invalid method")
+                  })
+                 })
+                  return Promise.all(methodPromises)
               })
             })
           })
@@ -194,4 +243,5 @@ describe('/api', ()=>{
             })
          })
       })
+    })
  })
