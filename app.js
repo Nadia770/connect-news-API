@@ -1,11 +1,17 @@
-const express =  require ('express')
+const express =  require ('express');
+const { handleCustomError, handle400s, handle500s } = require('./Error-Handlers/index.js');
 const app = express()
 const apiRouter = require('./Routers/apiRouter.js')
-const {handle400s} = require('./Error-Handlers')
 
 
-app.use(handle400s)
+
+app.use(express.json());
 app.use('/api', apiRouter);
+
+//error Handlers
+app.use(handle400s)
+app.use(handleCustomError)
+app.use(handle500s)
 
 
 

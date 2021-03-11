@@ -3,18 +3,16 @@ const request = require('supertest')
 const app = require('./app')
 const dbConnection = require('./db/dbConnection')
 
-afterAll(()=>
-    dbConnection.destroy()
-);
+afterAll(()=> dbConnection.destroy());
 
-beforeEach(()=>
-    dbConnection.seed.run()
-);
+beforeEach(()=> dbConnection.seed.run());
 
 describe('/api', ()=>{
     describe('/topics', ()=>{
-        describe('/GET', ()=>{
+        describe('GET', ()=>{
             it("status:200, return topics", ()=>{
+              //process is asyc, return is written to inform jest
+              //to perform assertions after the promise is resolved
                 return request(app)
                 .get('/api/topics')
                 .expect(200)
@@ -45,14 +43,14 @@ describe('/api', ()=>{
             })
         })
         describe('Error', ()=>{
-          it("status 404: Endpoint doesn't exist ", ()=>{
+          it("status 404: valid username which is not present ", ()=>{
               return request(app)
               .get('/api/users/reindeer')
               .expect(404)
-              .then(({body: {message, req}})=>{
-                  expect(message).toBe('No username with name: reindeer')
+              .then(({body: {msg}})=>{
+                  expect(msg).toBe('username does not exist')
               })
-          })
+           })
         })
        })
       })
@@ -63,7 +61,6 @@ describe('/api', ()=>{
               .get('/api/articles/1')
               .expect(200)
               .then(({body})=>{
-                console.log(body.articles)
                   expect(Array.isArray(body.articles)).toBe(true)
                   expect(body.articles[0]).toMatchObject({
                       author: expect.any(String),
@@ -77,10 +74,73 @@ describe('/api', ()=>{
                   })
                 })
               })
-  
-        })
+          })
+          describe('Error', ()=>{
+            it('status: 404, valid article_Id which is not present ', ()=>{
+              return request(app)
+              .get('/api/articles/999')
+              .expect(404)
+              .then(({body: {msg}})=>{
+                expect(msg).toBe('Article does not exist')
+             })
+            })
+            it('status: 400, invalid article_Id  ', ()=>{
+              return request(app)
+              .get('/api/articles/$$$')
+              .expect(400)
+              .then(({body: {msg}})=>{
+                expect(msg).toBe('Bad request')
+             })
+            })
+          })
+          describe('PATCH', ()=>{
+            it("Status 200: Increment the current article's vote property by 7 ", ()=>{
+              return request(app)
+              .patch('/api/articles/2')
+              .send({inc_votes: 7})
+              .expect(200)
+              .then(({body})=>{
+                expect(body.articles[0].votes).toBe(7)
+              })
+            })
+            it("Status 200: Decrement the current article's vote property by 5 ", ()=>{
+              return request(app)
+              .patch('/api/articles/3')
+              .send({inc_votes: -5})
+              .expect(200)
+              .then(({body})=>{
+                expect(body.articles[0].votes).toBe(-5)
+              })
+            })
+            describe('Error', ()=>{
+              it('status: 404, reject patch request when article_id is valid but not present ', ()=>{
+                return request(app)
+                .patch('/api/articles/999')
+                .send({inc_votes: 8})
+                .expect(404)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Article does not exist')
+               })
+              })
+             it('status: 400, reject patch request article_id is invalid', ()=>{
+                return request(app)
+                .patch('/api/articles/$$$')
+                .send({inc_votes: 10})
+                .expect(400)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Bad request')
+               })
+              })
+              it('status: 400, reject patch request if inc_votes key is invalid', ()=>{
+                return request(app)
+                .patch('/api/articles/3')
+                .send({inc_votes: 'seven'})
+                .expect(400)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Bad request')
+               })
+              })
+            })
+          })
       })
-    
  })
-     
-        

@@ -1,6 +1,17 @@
 
 exports.handle400s = (err, req, res, next)=>{
-    if(err.code == '42P01'){
-        res.status(400).send({message: 'Bad request'})
+    if(err.code == '22P02'){
+        res.status(400).send({msg: 'Bad request'})
     }
+    else next(err)
+};
+
+exports.handleCustomError = (err, req, res, next)=>{
+  if(err.status) res.status(err.status).send({msg : err.msg})
+  else next(err)
+};
+
+exports.handle500s = (err, req, res, next)=>{
+  console.log(err, "in the 500")
+  res.status(500).send({msg : "internal server error"})
 };
