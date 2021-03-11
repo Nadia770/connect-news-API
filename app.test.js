@@ -180,6 +180,15 @@ describe('/api', ()=>{
                   expect(msg).toBe('Bad request')
                })
               })
+              it('status: 400, malfunctioned body', ()=>{
+                return request(app)
+                .patch('/api/articles/1')
+                .send({chicken_farm: 4})
+                .expect(400)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Bad request')
+               })
+              })
               it("status: 405, rejects invalid methods", ()=>{
                 const invalidMethods = ['put', 'delete']
                 const methodPromises = invalidMethods.map((method)=>{
