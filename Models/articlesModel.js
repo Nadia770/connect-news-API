@@ -28,7 +28,7 @@ exports.updateArticleById = (article_id, inc_votes)=>{
 				if(isNaN(inc_votes)) return Promise.reject({status: 400, msg: 'Bad request'})
         if(!article.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
         else {
-        article[0].votes = inc_votes
+        article[0].votes += inc_votes
         return article
         }
     })
