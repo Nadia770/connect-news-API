@@ -142,5 +142,56 @@ describe('/api', ()=>{
               })
             })
           })
+          describe('POST', ()=>{
+            it('status: 201 responds with created comment', ()=>{
+              return request(app)
+              .post('/api/articles/2/comments')
+              .send({username:'shortbread fanatic', body:'coffee without shortbread?!'})
+              .expect(201)
+              .then(({body})=>{
+                console.log(body.articles)
+                expect(Array.isArray(body.articles)).toBe(true)
+                expect(body.articles[0]).toMatchObject({
+                  author: expect.any(String),
+                  title: expect.any(String),
+                  article_id: expect.any(Number),
+                  body: expect.any(String),
+                  topic: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number),
+                })
+
+              })
+            })
+            describe('Error', ()=>{
+              it('status: 404, reject post request when article_id is valid but not present ', ()=>{
+                return request(app)
+                .post('/api/articles/999/comments')
+                .send({username:'shortbread fanatic', body:'coffee without shortbread?!'})
+                .expect(404)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Article does not exist')
+               })
+              })
+              it('status: 400, reject post request article_id is invalid', ()=>{
+                return request(app)
+                .post('/api/articles/two/comments')
+                .send({username:'shortbread fanatic', body:'coffee without shortbread?!'})
+                .expect(400)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Bad request')
+               })
+              })
+              it('status: 405, reject invalid method', ()=>{
+                return request(app)
+                .delete('/api/articles/two/comments')
+                .send({username:'shortbread fanatic', body:'coffee without shortbread?!'})
+                .expect(405)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Invalid method')
+               })
+              })
+            })
+         })
       })
  })

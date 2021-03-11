@@ -1,3 +1,6 @@
+exports.handle405s = (req, res, next) =>{
+  res.status(405).send({msg: 'Invalid method'})
+};
 
 exports.handle400s = (err, req, res, next)=>{
     if(err.code == '22P02'){
