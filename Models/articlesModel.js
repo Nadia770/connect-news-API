@@ -24,16 +24,20 @@ exports.fetchArticlesById = (article_id)=>{
 exports.updateArticleById = (article_id, inc_votes)=>{
   console.log(inc_votes)
   if(isNaN(inc_votes)) return Promise.reject({status: 400, msg: 'Bad request'})
+    else {
     return dbConnection 
     .select('*').from('articles')
     .where('article_id', article_id)
     .increment('votes', inc_votes)
+    .returning('*')
     .then((article)=>{
+      console.log(article)
         if(!article.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
         else {
         return article
         }
     })
+    }
 };
 
 exports.createCommentByArticleId =(comment, article_id)=>{

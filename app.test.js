@@ -289,7 +289,6 @@ describe('/api', ()=>{
               .get('/api/articles/1/comments')
               .expect(200)
               .then(({body})=>{
-                console.log(body.comments)
                 expect(Array.isArray(body.comments)).toBe(true)
                 expect(body.comments).toBeSortedBy('created_at', {descending:true})
               })
