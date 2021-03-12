@@ -4,7 +4,8 @@ const app = require('./app')
 const dbConnection = require('./db/dbConnection')
 
 afterAll(()=> dbConnection.destroy());
-//close connection to end the test
+//close connection to db once the tests are over
+
 
 beforeEach(()=> dbConnection.seed.run());
 
@@ -28,6 +29,7 @@ describe('/api', ()=>{
             describe('Error', ()=>{
               it("status: 405, rejects invalid methods", ()=>{
                 const invalidMethods = ['patch', 'put', 'delete']
+                //creating an array of pending promises
                 const methodPromises = invalidMethods.map((method)=>{
                   return request(app)
                   [method]('/api/topics')
@@ -36,8 +38,9 @@ describe('/api', ()=>{
                     expect(msg).toBe("Invalid method")
                   })
               })
+              //Promise { <pending> }
               return Promise.all(methodPromises)
-              //takes an iterable object
+              //allows the handling of multiple asynchronous processes
               //resolution of promise must be returned
             })
         })
@@ -102,6 +105,7 @@ describe('/api', ()=>{
                   })
                 })
               })
+              
           })
           describe('Error', ()=>{
             it('status: 404, valid article_Id which is not present ', ()=>{
@@ -171,7 +175,7 @@ describe('/api', ()=>{
                   expect(msg).toBe('Bad request')
                })
               })
-              it('status: 400, reject patch request if inc_votes key is invalid', ()=>{
+              it('status: 400, reject patch request if inc_votes key is an invalid data type', ()=>{
                 return request(app)
                 .patch('/api/articles/3')
                 .send({inc_votes: 'seven'})
@@ -180,10 +184,10 @@ describe('/api', ()=>{
                   expect(msg).toBe('Bad request')
                })
               })
-              it('status: 400, malfunctioned body', ()=>{
+              it('status: 400, rejects malformed body', ()=>{
                 return request(app)
                 .patch('/api/articles/1')
-                .send({chicken_farm: 4})
+                .send({incorrect_property: 4})
                 .expect(400)
                 .then(({body: {msg}})=>{
                   expect(msg).toBe('Bad request')
@@ -251,8 +255,40 @@ describe('/api', ()=>{
                   expect(msg).toBe('Invalid method')
                })
               })
+              it('status: 400, rejects malformed body', ()=>{
+                return request(app)
+                .post('/api/articles/2/comments')
+                .send({incorrect_property:'butter_bridge' , incorrect_property:'coffee without shortbread?!'})
+                .expect(400)
+                .then(({body:{msg}})=>{
+                  expect(msg).toBe('Bad request')
+               })
+              })
             })
          })
+      })
+    })
+    describe("/articles", ()=>{
+      describe("/:article_id", ()=>{
+        describe('/comments', ()=>{
+          describe("GET", ()=>{
+            it('status: 200, return an array of comments by article_id', () =>{
+              return request(app)
+              .get('/api/articles/1/comments')
+              .expect(200)
+              .then(({body})=>{
+                expect(Array.isArray(body.comments)).toBe(true)
+                expect(body.comments[0]).toMatchObject({
+                  author: expect.any(String),
+                  comment_id: expect.any(Number),
+                  body: expect.any(String),
+                  created_at: expect.any(String),
+                  votes: expect.any(Number)
+                })
+              })
+            })
+          })
+        })
       })
     })
  })

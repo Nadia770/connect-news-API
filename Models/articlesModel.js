@@ -38,6 +38,7 @@ exports.sendCommentByArticleId =(comment, article_id)=>{
   return dbConnection
   .select('*').from('articles').where('article_id', article_id)
   .then((article)=>{
+    if(!comment.body || !comment.username) return Promise.reject({status: 400, msg: 'Bad request'})
     if(!article.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
     else {
       article[0].body = comment.body
@@ -45,4 +46,18 @@ exports.sendCommentByArticleId =(comment, article_id)=>{
       return article
     }
   })
-}
+};
+
+
+exports.fetchCommentByArticleId = (article_id)=>{
+  console.log("im in the model")
+  return dbConnection
+  .select('*').from('comments').where('article_id', article_id)
+  .then((comment)=>{
+    console.log(comment)
+    if(!comment.length) return Promise.reject({status: 404, msg: 'comment does not exist'})
+    else {
+      return comment
+    }
+  })
+};

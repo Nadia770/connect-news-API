@@ -1,4 +1,4 @@
-const {fetchArticlesById, updateArticleById, sendCommentByArticleId} = require('../Models/articlesModel')
+const {fetchArticlesById, updateArticleById, sendCommentByArticleId, fetchCommentByArticleId} = require('../Models/articlesModel')
 
 
 exports.getArticlesById = (req, res, next)=>{
@@ -32,4 +32,15 @@ exports.postCommentByArticleId =(req, res, next)=>{
    .catch((err)=>{
      next(err)
    })
-}
+};
+
+exports.getCommentByArticleId =(req, res, next)=>{
+   console.log("im in the controller")
+   const {article_id} = req.params
+   fetchCommentByArticleId(article_id).then((comments)=>{
+      res.status(200).send({comments})
+   })
+   .catch((err)=>{
+     next(err)
+   })
+};
