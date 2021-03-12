@@ -35,7 +35,6 @@ exports.postCommentByArticleId =(req, res, next)=>{
 };
 
 exports.getCommentByArticleId =(req, res, next)=>{
-   console.log("im in the controller")
    const {article_id} = req.params
    Promise.all([fetchCommentByArticleId(article_id), checkIfArticleExits(article_id)])
    .then(([comments])=>{

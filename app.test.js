@@ -214,7 +214,6 @@ describe('/api', ()=>{
               .send({username:'butter_bridge', body:'coffee without shortbread?!'})
               .expect(201)
               .then(({body})=>{
-                console.log(body.comments)
                 expect(Array.isArray(body.comments)).toBe(true)
                 expect(body.comments[0]).toMatchObject({
                   comment_id: expect.any(Number),
@@ -227,15 +226,6 @@ describe('/api', ()=>{
               })
             })
             describe('Error', ()=>{
-              it('status: 404, reject post request when article_id is valid but not present ', ()=>{
-                return request(app)
-                .post('/api/articles/999/comments')
-                .send({username:'butter_bridge', body:'coffee without shortbread?!'})
-                .expect(404)
-                .then(({body: {msg}})=>{
-                  expect(msg).toBe('Article does not exist')
-               })
-              })
               it('status: 400, reject post request article_id is invalid', ()=>{
                 return request(app)
                 .post('/api/articles/two/comments')

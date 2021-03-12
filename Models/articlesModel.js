@@ -22,13 +22,15 @@ exports.fetchArticlesById = (article_id)=>{
 
 
 exports.updateArticleById = (article_id, inc_votes)=>{
+  console.log(inc_votes)
+  if(isNaN(inc_votes)) return Promise.reject({status: 400, msg: 'Bad request'})
     return dbConnection 
-    .select('*').from('articles').where('article_id', article_id)
+    .select('*').from('articles')
+    .where('article_id', article_id)
+    .increment('votes', inc_votes)
     .then((article)=>{
-				if(isNaN(inc_votes)) return Promise.reject({status: 400, msg: 'Bad request'})
         if(!article.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
         else {
-        article[0].votes += inc_votes
         return article
         }
     })
