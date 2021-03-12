@@ -54,10 +54,14 @@ exports.createCommentByArticleId =(comment, article_id)=>{
 };
 
 
-exports.fetchCommentByArticleId = (article_id)=>{
+exports.fetchCommentByArticleId = (article_id, sort_by)=>{
+  console.log(sort_by)
   return dbConnection
-  .select('*').from('comments').where('article_id', article_id)
-  .orderBy('created_at', 'desc')
+  .select('*').from('comments')
+  .where('article_id', article_id)
+  .orderBy(sort_by ||'created_at', 'desc')
+  .returning("*")
+
 };
 
 

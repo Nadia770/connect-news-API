@@ -266,6 +266,7 @@ describe('/api', ()=>{
               .get('/api/articles/1/comments')
               .expect(200)
               .then(({body})=>{
+                console.log(body.comments)
                 expect(Array.isArray(body.comments)).toBe(true)
                 expect(body.comments[0]).toMatchObject({
                   author: expect.any(String),
@@ -291,6 +292,15 @@ describe('/api', ()=>{
               .then(({body})=>{
                 expect(Array.isArray(body.comments)).toBe(true)
                 expect(body.comments).toBeSortedBy('created_at', {descending:true})
+              })
+            })
+            it.only('status: 200, sorts comments by any valid column', () =>{
+              return request(app)
+              .get('/api/articles/1/comments?sort_by=votes')
+              .expect(200)
+              .then(({body})=>{
+                expect(Array.isArray(body.comments)).toBe(true)
+                expect(body.comments).toBeSortedBy('votes', {descending:true})
               })
             })
             describe('Error', ()=>{

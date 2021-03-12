@@ -36,7 +36,8 @@ exports.postCommentByArticleId =(req, res, next)=>{
 
 exports.getCommentByArticleId =(req, res, next)=>{
    const {article_id} = req.params
-   Promise.all([fetchCommentByArticleId(article_id), checkIfArticleExits(article_id)])
+   const {sort_by} = req.query
+   Promise.all([fetchCommentByArticleId(article_id, sort_by), checkIfArticleExits(article_id)])
    .then(([comments])=>{
       res.status(200).send({comments})
    })
