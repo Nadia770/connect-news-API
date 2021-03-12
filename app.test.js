@@ -211,20 +211,19 @@ describe('/api', ()=>{
             it('status: 201 responds with created comment', ()=>{
               return request(app)
               .post('/api/articles/2/comments')
-              .send({username:'shortbread fanatic', body:'coffee without shortbread?!'})
+              .send({username:'butter_bridge', body:'coffee without shortbread?!'})
               .expect(201)
               .then(({body})=>{
-                expect(Array.isArray(body.articles)).toBe(true)
-                expect(body.articles[0]).toMatchObject({
+                console.log(body.comments)
+                expect(Array.isArray(body.comments)).toBe(true)
+                expect(body.comments[0]).toMatchObject({
+                  comment_id: expect.any(Number),
                   author: expect.any(String),
-                  title: expect.any(String),
                   article_id: expect.any(Number),
-                  body: expect.any(String),
-                  topic: expect.any(String),
-                  created_at: expect.any(String),
                   votes: expect.any(Number),
+                  created_at: expect.any(String),
+                  body: expect.any(String)
                 })
-
               })
             })
             describe('Error', ()=>{

@@ -34,18 +34,17 @@ exports.updateArticleById = (article_id, inc_votes)=>{
     })
 };
 
-exports.sendCommentByArticleId =(comment, article_id)=>{
+exports.createCommentByArticleId =(comment, article_id)=>{
+  if(!comment.body || !comment.username) return Promise.reject({status: 400, msg: 'Bad request'})
+  const newComment = {
+    author: comment.username,
+    body: comment.body,
+    article_id : article_id
+  }
   return dbConnection
-  .select('*').from('articles').where('article_id', article_id)
-  .then((article)=>{
-    if(!comment.body || !comment.username) return Promise.reject({status: 400, msg: 'Bad request'})
-    if(!article.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
-    else {
-      article[0].body = comment.body
-      article[0].author = comment.username 
-      return article
-    }
-  })
+  .from('comments')
+  .insert(newComment)
+  .returning("*")
 };
 
 
