@@ -1,4 +1,4 @@
-const {fetchArticlesById, updateArticleById, sendCommentByArticleId, fetchCommentByArticleId} = require('../Models/articlesModel')
+const {fetchArticlesById, updateArticleById, sendCommentByArticleId, fetchCommentByArticleId, checkIfArticleExits} = require('../Models/articlesModel')
 
 
 exports.getArticlesById = (req, res, next)=>{
@@ -37,7 +37,8 @@ exports.postCommentByArticleId =(req, res, next)=>{
 exports.getCommentByArticleId =(req, res, next)=>{
    console.log("im in the controller")
    const {article_id} = req.params
-   fetchCommentByArticleId(article_id).then((comments)=>{
+   Promise.all([fetchCommentByArticleId(article_id), checkIfArticleExits(article_id)])
+   .then(([comments])=>{
       res.status(200).send({comments})
    })
    .catch((err)=>{

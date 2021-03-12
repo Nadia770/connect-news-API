@@ -287,6 +287,42 @@ describe('/api', ()=>{
                 })
               })
             })
+            it('status: 200, returns articles with no comments', () =>{
+                return request(app)
+                .get('/api/articles/2/comments')
+                .expect(200)
+                .then(({body})=>{
+                  expect(body.comments).toHaveLength(0)
+                })
+            })
+            it('status: 200, sorts comments by created_at property in descending order by default', () =>{
+              return request(app)
+              .get('/api/articles/1/comments')
+              .expect(200)
+              .then(({body})=>{
+                console.log(body.comments)
+                expect(Array.isArray(body.comments)).toBe(true)
+                expect(body.comments).toBeSortedBy('created_at', {descending:true})
+              })
+            })
+            describe('Error', ()=>{
+              it('status: 404, rejects valid but non-existent article_id', ()=>{
+                return request(app)
+                .get('/api/articles/76/comments')
+                .expect(404)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Article does not exist')
+               })
+              })
+              it('status: 400, reject get request if article_id is invalid', ()=>{
+                return request(app)
+                .get('/api/articles/two/comments')
+                .expect(400)
+                .then(({body: {msg}})=>{
+                  expect(msg).toBe('Bad request')
+               })
+              })
+            })
           })
         })
       })

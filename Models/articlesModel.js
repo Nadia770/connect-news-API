@@ -50,14 +50,19 @@ exports.sendCommentByArticleId =(comment, article_id)=>{
 
 
 exports.fetchCommentByArticleId = (article_id)=>{
-  console.log("im in the model")
   return dbConnection
   .select('*').from('comments').where('article_id', article_id)
-  .then((comment)=>{
-    console.log(comment)
-    if(!comment.length) return Promise.reject({status: 404, msg: 'comment does not exist'})
-    else {
-      return comment
+  .orderBy('created_at', 'desc')
+};
+
+
+exports.checkIfArticleExits = (article_id)=>{
+  return dbConnection('articles')
+  .select('*')
+  .where('article_id', article_id)
+  .then((article)=>{
+    if(!article.length){
+      return Promise.reject({status: 404, msg: 'Article does not exist'})
     }
   })
 };
