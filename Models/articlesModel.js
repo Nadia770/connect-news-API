@@ -1,3 +1,4 @@
+const { query } = require('express');
 const dbConnection = require('../db/dbConnection')
 
 exports.fetchArticlesById = (article_id)=>{
@@ -22,7 +23,6 @@ exports.fetchArticlesById = (article_id)=>{
 
 
 exports.updateArticleById = (article_id, inc_votes)=>{
-  console.log(inc_votes)
   if(isNaN(inc_votes)) return Promise.reject({status: 400, msg: 'Bad request'})
     else {
     return dbConnection 
@@ -31,7 +31,6 @@ exports.updateArticleById = (article_id, inc_votes)=>{
     .increment('votes', inc_votes)
     .returning('*')
     .then((article)=>{
-      console.log(article)
         if(!article.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
         else {
         return article
@@ -55,7 +54,6 @@ exports.createCommentByArticleId =(comment, article_id)=>{
 
 
 exports.fetchCommentByArticleId = (article_id, sort_by)=>{
-  console.log(sort_by)
   return dbConnection
   .select('*').from('comments')
   .where('article_id', article_id)
@@ -74,4 +72,26 @@ exports.checkIfArticleExits = (article_id)=>{
       return Promise.reject({status: 404, msg: 'Article does not exist'})
     }
   })
+};
+
+
+exports.fetchAllArticles = ({sort_by, author, topic})=>{
+  return dbConnection
+  .select('articles.author',
+          'articles.title', 
+          'articles.article_id', 
+          'articles.body', 
+          'articles.topic', 
+          'articles.created_at',
+          'articles.votes')
+  .count('comments.comment_id as comment_count')
+  .from('articles')
+  .leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
+  .groupBy("articles.article_id")
+  .orderBy(sort_by ||'created_at', 'desc')
+  .modify((querySoFar)=>{
+    if(author !== undefined) querySoFar.where('articles.author', author)
+    if(topic !== undefined) querySoFar.where('articles.topic', topic)
+  })
+  .returning('*')
 };
