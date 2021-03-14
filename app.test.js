@@ -155,6 +155,28 @@ describe('/api', ()=>{
                           })
                         })
                       })
+                      describe('Error', ()=>{
+                        it("status: 405, rejects invalid methods", ()=>{
+                          const invalidMethods = ['patch', 'put', 'delete']
+                          const methodPromises = invalidMethods.map((method)=>{
+                            return request(app)
+                            [method]('/api/articles')
+                            .expect(405)
+                            .then(({body:{msg}})=>{
+                              expect(msg).toBe("Invalid method")
+                            })
+                        })
+                        return Promise.all(methodPromises)
+                      })
+                  })
+                  it('status: 404, sorting by a valid column that does not exist', ()=>{
+                    return request(app)
+                    .get('/api/articles?sort_by=book')
+                    .expect(400)
+                    .then(({body: {msg}})=>{
+                      expect(msg).toBe('Bad request')
+                   })
+                  })
             })
          
               describe("/:article_id", ()=>{
