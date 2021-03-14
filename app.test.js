@@ -499,7 +499,7 @@ describe('/api', ()=>{
              })
             })
             it("status: 405, rejects invalid methods", ()=>{
-              const invalidMethods = ['put', 'delete']
+              const invalidMethods = ['put']
               const methodPromises = invalidMethods.map((method)=>{
                 return request(app)
                 [method]('/api/comments/2')
@@ -512,6 +512,52 @@ describe('/api', ()=>{
             })
           })
           
+        })
+      })
+      describe('DELETE', ()=>{
+        it('status: 204, Deletes a comment by comment_id', ()=>{
+          return request(app)
+          .delete('/api/comments/1')
+          .expect(204)
+          .then(()=>{
+            return dbConnection
+            .select('*')
+            .from('comments')
+            .where('comment_id', 1)
+          })
+          .then((comments)=>{
+            expect(comments).toHaveLength(0)
+          })
+        })
+        describe('Error', ()=>{
+          it('status: 404, reject delet request when comment_id is valid but not present ', ()=>{
+            return request(app)
+            .delete('/api/comments/999')
+            .expect(404)
+            .then(({body: {msg}})=>{
+              expect(msg).toBe('Comment does not exist')
+           })
+          })
+         it('status: 400, reject delete request if comment_id is invalid', ()=>{
+            return request(app)
+            .delete('/api/comments/$$$')
+            .expect(400)
+            .then(({body: {msg}})=>{
+              expect(msg).toBe('Bad request')
+           })
+          })
+          it("status: 405, rejects invalid methods", ()=>{
+            const invalidMethods = ['put']
+            const methodPromises = invalidMethods.map((method)=>{
+              return request(app)
+              [method]('/api/comments/2')
+              .expect(405)
+              .then(({body:{msg}})=>{
+                expect(msg).toBe("Invalid method")
+              })
+             })
+              return Promise.all(methodPromises)
+          })
         })
       })
     })

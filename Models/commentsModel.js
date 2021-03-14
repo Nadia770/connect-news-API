@@ -14,3 +14,15 @@ exports.updateCommentById = (comment_id, inc_votes)=>{
       })
       }
   };
+
+
+  exports.removeCommentById = (comment_id)=>{
+      return dbConnection 
+      .select('*').from('comments')
+      .where('comment_id', comment_id)
+      .del()
+      .then((deleteCount)=>{
+        if(deleteCount == 0) return Promise.reject({status: 404, msg: 'Comment does not exist'})
+      })
+  };
+

@@ -1,9 +1,10 @@
 const commentsRouter = require('express').Router()
-const {patchCommentById} = require('../Controllers/commentsController')
+const {patchCommentById, deleteByCommentId} = require('../Controllers/commentsController')
 const {handle405s} = require('../Error-Handlers')
 
 commentsRouter.route('/:comment_id')
 .patch(patchCommentById)
+.delete(deleteByCommentId)
 .all(handle405s)
 
 
