@@ -3,7 +3,9 @@ const {getTopics} = require('../Controllers/topicsController')
 const {handle405s} = require('../Error-Handlers')
 
 
-topicsRouter.route('/').get(getTopics).all(handle405s)
+topicsRouter.route('/')
+.get(getTopics)
+.all(handle405s)
 
 
 

@@ -1,4 +1,3 @@
-const { query } = require('express');
 const dbConnection = require('../db/dbConnection')
 
 exports.fetchArticlesById = (article_id)=>{

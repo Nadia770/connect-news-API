@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'test'
-const request = require('supertest')
+const request = require('supertest');
+const { patch } = require('./app');
 const app = require('./app')
 const dbConnection = require('./db/dbConnection')
 
@@ -333,7 +334,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('Article does not exist')
                  })
                 })
-               it('status: 400, reject patch request article_id is invalid', ()=>{
+               it('status: 400, reject patch request if article_id is invalid', ()=>{
                   return request(app)
                   .patch('/api/articles/$$$')
                   .send({inc_votes: 10})
@@ -422,4 +423,96 @@ describe('/api', ()=>{
                 })
               })
            })
+    describe('/comments', ()=>{
+      describe('/:comments_id', ()=>{
+        describe('PATCH', ()=>{
+          it('status: 200, Increment the vote property of a comment', ()=>{
+            return request(app)
+            .patch('/api/comments/1')
+            .send({inc_votes: 50})
+            .expect(200)
+            .then(({body})=>{
+              expect(Array.isArray(body.comments)).toBe(true)
+              expect(body.comments[0].votes >=50).toBe(true)
+              expect(body.comments[0]).toMatchObject({
+                comment_id: 1,
+                author: expect.any(String),
+                article_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                body: expect.any(String) 
+              })
+            })
+          })
+          it('status: 200, Decrement the vote property of a comment', ()=>{
+            return request(app)
+            .patch('/api/comments/2')
+            .send({inc_votes: -10})
+            .expect(200)
+            .then(({body})=>{
+              expect(Array.isArray(body.comments)).toBe(true)
+              expect(body.comments[0]).toMatchObject({
+                comment_id: 2,
+                author: expect.any(String),
+                article_id: expect.any(Number),
+                votes: expect.any(Number),
+                created_at: expect.any(String),
+                body: expect.any(String) 
+              })
+            })
+          })
+          describe('Error', ()=>{
+            it('status: 404, reject patch request when comment_id is valid but not present ', ()=>{
+              return request(app)
+              .patch('/api/comments/999')
+              .send({inc_votes: 8})
+              .expect(404)
+              .then(({body: {msg}})=>{
+                expect(msg).toBe('Comment does not exist')
+             })
+            })
+           it('status: 400, reject patch request if comment_id is invalid', ()=>{
+              return request(app)
+              .patch('/api/comments/$$$')
+              .send({inc_votes: 10})
+              .expect(400)
+              .then(({body: {msg}})=>{
+                expect(msg).toBe('Bad request')
+             })
+            })
+            it('status: 400, reject patch request if inc_votes key is an invalid data type', ()=>{
+              return request(app)
+              .patch('/api/comments/3')
+              .send({inc_votes: 'seven'})
+              .expect(400)
+              .then(({body: {msg}})=>{
+                expect(msg).toBe('Bad request')
+             })
+            })
+            it('status: 400, rejects malformed body', ()=>{
+              return request(app)
+              .patch('/api/comments/1')
+              .send({incorrect_property: 4})
+              .expect(400)
+              .then(({body: {msg}})=>{
+                expect(msg).toBe('Bad request')
+             })
+            })
+            it("status: 405, rejects invalid methods", ()=>{
+              const invalidMethods = ['put', 'delete']
+              const methodPromises = invalidMethods.map((method)=>{
+                return request(app)
+                [method]('/api/comments/2')
+                .expect(405)
+                .then(({body:{msg}})=>{
+                  expect(msg).toBe("Invalid method")
+                })
+               })
+                return Promise.all(methodPromises)
+            })
+          })
+          
+        })
+      })
+    })
  })
