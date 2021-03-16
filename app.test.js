@@ -13,7 +13,7 @@ beforeEach(()=> dbConnection.seed.run());
 describe('/api', ()=>{
     describe('/topics', ()=>{
         describe('GET', ()=>{
-            it("status: 200, return topics", ()=>{
+            it("status:200 - return topics", ()=>{
               //process is asyc, return is written to inform jest
               //to perform assertions after the promise is resolved
                 return request(app)
@@ -28,7 +28,7 @@ describe('/api', ()=>{
                 })
             })
             describe('Error', ()=>{
-              it("status: 405, rejects invalid methods", ()=>{
+              it("status:405 - rejects invalid methods", ()=>{
                 const invalidMethods = ['patch', 'put', 'delete']
                 //creating an array of pending promises
                 const methodPromises = invalidMethods.map((method)=>{
@@ -39,10 +39,7 @@ describe('/api', ()=>{
                     expect(msg).toBe("Invalid method")
                   })
               })
-              //Promise { <pending> }
               return Promise.all(methodPromises)
-              //allows the handling of multiple asynchronous processes
-              //resolution of promise must be returned
             })
         })
     })   
@@ -50,7 +47,7 @@ describe('/api', ()=>{
       })
       describe('/users', ()=>{
         describe('/GET', ()=>{
-          it("status: 200, return specific user by username", ()=>{
+          it("status:200 - return specific user by username", ()=>{
               return request(app)
               .get('/api/users/lurker')
               .expect(200)
@@ -65,7 +62,7 @@ describe('/api', ()=>{
               })
           })
           describe('Error', ()=>{
-            it("status: 404, valid username which is not present ", ()=>{
+            it("status:404 - valid username which is not present ", ()=>{
                 return request(app)
                 .get('/api/users/reindeer')
                 .expect(404)
@@ -73,7 +70,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('username does not exist')
                 })
              })
-             it("status: 405, rejects invalid methods", ()=>{
+             it("status:405 - rejects invalid methods", ()=>{
               const invalidMethods = ['patch', 'put', 'delete']
               const methodPromises = invalidMethods.map((method)=>{
                 return request(app)
@@ -90,7 +87,7 @@ describe('/api', ()=>{
         })
         describe("/articles", ()=>{
           describe('GET', ()=>{
-            it("status: 200, returns all articles", ()=>{
+            it("status:200 - returns all articles", ()=>{
               return request(app)
               .get('/api/articles')
               .expect(200)
@@ -107,7 +104,7 @@ describe('/api', ()=>{
                   })
               })
             })
-            it("status: 200, sorts articles by date by default", ()=>{
+            it("status:200 - sorts articles by date by default", ()=>{
               return request(app)
               .get('/api/articles')
               .expect(200)
@@ -116,7 +113,7 @@ describe('/api', ()=>{
                   expect(body.articles).toBeSortedBy('created_at', {descending:true})
                   })
               })
-              it("status: 200, Sorts articles by any valid colomn", ()=>{
+              it("status:200 - sorts articles by any valid colomn", ()=>{
                 return request(app)
                 .get('/api/articles?sort_by=author')
                 .expect(200)
@@ -125,7 +122,7 @@ describe('/api', ()=>{
                     expect(body.articles).toBeSortedBy('author', {descending:true})
                     })
                 })
-                it("status: 200, Sorts articles by any valid colomn", ()=>{
+                it("status:200 - sorts articles by any valid colomn", ()=>{
                   return request(app)
                   .get('/api/articles?sort_by=title')
                   .expect(200)
@@ -134,7 +131,7 @@ describe('/api', ()=>{
                       expect(body.articles).toBeSortedBy('title', {descending:true})
                       })
                   })
-                  it("status: 200, Can filter artcles by author", ()=>{
+                  it("status:200 - can filter artcles by author", ()=>{
                     return request(app)
                     .get('/api/articles?author=icellusedkars')
                     .expect(200)
@@ -145,7 +142,7 @@ describe('/api', ()=>{
                         })
                       })
                     })
-                    it("status: 200, Can filters the articles by the topic", ()=>{
+                    it("status:200 - can filters the articles by the topic", ()=>{
                       return request(app)
                       .get('/api/articles?topic=mitch')
                       .expect(200)
@@ -157,7 +154,7 @@ describe('/api', ()=>{
                         })
                       })
                       describe('Error', ()=>{
-                        it("status: 405, rejects invalid methods", ()=>{
+                        it("status:405 - rejects invalid methods", ()=>{
                           const invalidMethods = ['patch', 'put', 'delete']
                           const methodPromises = invalidMethods.map((method)=>{
                             return request(app)
@@ -169,20 +166,21 @@ describe('/api', ()=>{
                         })
                         return Promise.all(methodPromises)
                       })
+                      it('status:404 - sorting by a valid column that does not exist', ()=>{
+                        return request(app)
+                        .get('/api/articles?sort_by=book')
+                        .expect(400)
+                        .then(({body: {msg}})=>{
+                          expect(msg).toBe('Bad request')
+                       })
+                      })
+                })
                   })
-                  it('status: 404, sorting by a valid column that does not exist', ()=>{
-                    return request(app)
-                    .get('/api/articles?sort_by=book')
-                    .expect(400)
-                    .then(({body: {msg}})=>{
-                      expect(msg).toBe('Bad request')
-                   })
-                  })
-            })
+                
          
               describe("/:article_id", ()=>{
                 describe('GET', ()=>{
-                  it("status: 200, return specific article by article_id", ()=>{
+                  it("status:200 - return specific article by article_id", ()=>{
                     return request(app)
                     .get('/api/articles/1')
                     .expect(200)
@@ -201,7 +199,7 @@ describe('/api', ()=>{
                     })
                   })
                   describe('Error', ()=>{
-                    it('status: 404, valid article_Id which is not present ', ()=>{
+                    it('status:404 - valid article_Id which is not present ', ()=>{
                       return request(app)
                       .get('/api/articles/999')
                       .expect(404)
@@ -209,7 +207,7 @@ describe('/api', ()=>{
                         expect(msg).toBe('Article does not exist')
                      })
                     })
-                    it('status: 400, invalid article_Id  ', ()=>{
+                    it('status:400 - invalid article_Id  ', ()=>{
                       return request(app)
                       .get('/api/articles/$$$')
                       .expect(400)
@@ -217,7 +215,7 @@ describe('/api', ()=>{
                         expect(msg).toBe('Bad request')
                      })
                     })
-                    it("status: 405, rejects invalid methods", ()=>{
+                    it("status:405 - rejects invalid methods", ()=>{
                       const invalidMethods = ['put', 'delete']
                       const methodPromises = invalidMethods.map((method)=>{
                         return request(app)
@@ -233,7 +231,7 @@ describe('/api', ()=>{
                 })
                 describe('/comments', ()=>{
                   describe("GET", ()=>{
-                    it('status: 200, return an array of comments by article_id', () =>{
+                    it('status:200 - return an array of comments by article_id', () =>{
                       return request(app)
                       .get('/api/articles/1/comments')
                       .expect(200)
@@ -248,7 +246,7 @@ describe('/api', ()=>{
                         })
                       })
                     })
-                    it('status: 200, returns articles with no comments', () =>{
+                    it('status:200 - returns articles with no comments', () =>{
                         return request(app)
                         .get('/api/articles/2/comments')
                         .expect(200)
@@ -256,7 +254,7 @@ describe('/api', ()=>{
                           expect(body.comments).toHaveLength(0)
                         })
                     })
-                    it('status: 200, sorts comments by created_at property in descending order by default', () =>{
+                    it('status:200 - sorts comments by created_at property in descending order by default', () =>{
                       return request(app)
                       .get('/api/articles/1/comments')
                       .expect(200)
@@ -265,7 +263,7 @@ describe('/api', ()=>{
                         expect(body.comments).toBeSortedBy('created_at', {descending:true})
                       })
                     })
-                    it('status: 200, sorts comments by any valid column', () =>{
+                    it('status:200 - sorts comments by any valid column', () =>{
                       return request(app)
                       .get('/api/articles/1/comments?sort_by=votes')
                       .expect(200)
@@ -274,8 +272,29 @@ describe('/api', ()=>{
                         expect(body.comments).toBeSortedBy('votes', {descending:true})
                       })
                     })
+                    it('status:200 - sorts column follows specified order', () => {
+                      return request(app)
+                        .get('/api/articles/1/comments?order=asc')
+                        .expect(200)
+                        .then(({ body }) => {
+                          expect(body.comments).toBeSortedBy('created_at', {
+                            ascending: true
+                          });
+                        });
+                    });
+                    it('status:200 - sorts by specified column in specified order', () => {
+                      return request(app)
+                        .get('/api/articles/1/comments?sort_by=votes&order=asc')
+                        .expect(200)
+                        .then(({ body }) => {
+                          expect(body.comments).toBeSortedBy('votes', {
+                            ascending: true
+                          });
+                        });
+                    });
+
                     describe('Error', ()=>{
-                      it('status: 404, rejects valid but non-existent article_id', ()=>{
+                      it('status:404 - rejects valid but non-existent article_id', ()=>{
                         return request(app)
                         .get('/api/articles/76/comments')
                         .expect(404)
@@ -283,7 +302,7 @@ describe('/api', ()=>{
                           expect(msg).toBe('Article does not exist')
                        })
                       })
-                      it('status: 400, reject get request if article_id is invalid', ()=>{
+                      it('status:400 - reject get request if article_id is invalid', ()=>{
                         return request(app)
                         .get('/api/articles/two/comments')
                         .expect(400)
@@ -291,7 +310,7 @@ describe('/api', ()=>{
                           expect(msg).toBe('Bad request')
                        })
                       })
-                      it('Status: 400, Sort by invalid column name', () => {
+                      it('Status:400 - sort by invalid column name', () => {
                         return request(app)
                           .get('/api/articles/1/comments?sort_by=pigeon')
                           .expect(400)
@@ -306,7 +325,7 @@ describe('/api', ()=>{
             })
             
             describe('PATCH', ()=>{
-              it("Status: 200, Increment the current article's vote property by 7 ", ()=>{
+              it("Status:200 - Increment the current article's vote property", ()=>{
                 return request(app)
                 .patch('/api/articles/2')
                 .send({inc_votes: 7})
@@ -315,7 +334,7 @@ describe('/api', ()=>{
                   expect(body.articles[0].votes).toBe(7)
                 })
               })
-              it("Status: 200, Decrement the current article's vote property by 5 ", ()=>{
+              it("Status:200 - Decrement the current article's vote property", ()=>{
                 return request(app)
                 .patch('/api/articles/3')
                 .send({inc_votes: -5})
@@ -325,7 +344,7 @@ describe('/api', ()=>{
                 })
               })
               describe('Error', ()=>{
-                it('status: 404, reject patch request when article_id is valid but not present ', ()=>{
+                it('status:404 - reject patch request when article_id is valid but not present ', ()=>{
                   return request(app)
                   .patch('/api/articles/999')
                   .send({inc_votes: 8})
@@ -334,7 +353,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('Article does not exist')
                  })
                 })
-               it('status: 400, reject patch request if article_id is invalid', ()=>{
+               it('status:400 - reject patch request if article_id is invalid', ()=>{
                   return request(app)
                   .patch('/api/articles/$$$')
                   .send({inc_votes: 10})
@@ -343,7 +362,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('Bad request')
                  })
                 })
-                it('status: 400, reject patch request if inc_votes key is an invalid data type', ()=>{
+                it('status:400 - reject patch request if inc_votes key is an invalid data type', ()=>{
                   return request(app)
                   .patch('/api/articles/3')
                   .send({inc_votes: 'seven'})
@@ -352,7 +371,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('Bad request')
                  })
                 })
-                it('status: 400, rejects malformed body', ()=>{
+                it('status:400 - rejects malformed body', ()=>{
                   return request(app)
                   .patch('/api/articles/1')
                   .send({incorrect_property: 4})
@@ -361,7 +380,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('Bad request')
                  })
                 })
-                it("status: 405, rejects invalid methods", ()=>{
+                it("status:405 - rejects invalid methods", ()=>{
                   const invalidMethods = ['put', 'delete']
                   const methodPromises = invalidMethods.map((method)=>{
                     return request(app)
@@ -376,7 +395,7 @@ describe('/api', ()=>{
               })
             })
             describe('POST', ()=>{
-              it('status: 201 responds with created comment', ()=>{
+              it('status:201 - responds with created comment', ()=>{
                 return request(app)
                 .post('/api/articles/2/comments')
                 .send({username:'butter_bridge', body:'coffee without shortbread?!'})
@@ -394,7 +413,7 @@ describe('/api', ()=>{
                 })
               })
               describe('Error', ()=>{
-                it('status: 400, reject post request article_id is invalid', ()=>{
+                it('status:400 - reject post request article_id is invalid', ()=>{
                   return request(app)
                   .post('/api/articles/two/comments')
                   .send({username:'butter_bridge', body:'coffee without shortbread?!'})
@@ -403,7 +422,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('Bad request')
                  })
                 })
-                it('status: 405, reject invalid method', ()=>{
+                it('status:405 - reject invalid method', ()=>{
                   return request(app)
                   .delete('/api/articles/3/comments')
                   .send({username:'butter_bridge', body:'coffee without shortbread?!'})
@@ -412,7 +431,7 @@ describe('/api', ()=>{
                     expect(msg).toBe('Invalid method')
                  })
                 })
-                it('status: 400, rejects malformed body', ()=>{
+                it('status:400 - rejects malformed body', ()=>{
                   return request(app)
                   .post('/api/articles/2/comments')
                   .send({incorrect_property:'butter_bridge' , incorrect_property:'coffee without shortbread?!'})
@@ -426,7 +445,7 @@ describe('/api', ()=>{
     describe('/comments', ()=>{
       describe('/:comments_id', ()=>{
         describe('PATCH', ()=>{
-          it('status: 200, Increment the vote property of a comment', ()=>{
+          it('status:200 - increment the vote property of a comment', ()=>{
             return request(app)
             .patch('/api/comments/1')
             .send({inc_votes: 50})
@@ -444,7 +463,7 @@ describe('/api', ()=>{
               })
             })
           })
-          it('status: 200, Decrement the vote property of a comment', ()=>{
+          it('status:200 - decrement the vote property of a comment', ()=>{
             return request(app)
             .patch('/api/comments/2')
             .send({inc_votes: -10})
@@ -462,7 +481,7 @@ describe('/api', ()=>{
             })
           })
           describe('Error', ()=>{
-            it('status: 404, reject patch request when comment_id is valid but not present ', ()=>{
+            it('status:404 - reject patch request when comment_id is valid but not present ', ()=>{
               return request(app)
               .patch('/api/comments/999')
               .send({inc_votes: 8})
@@ -471,7 +490,7 @@ describe('/api', ()=>{
                 expect(msg).toBe('Comment does not exist')
              })
             })
-           it('status: 400, reject patch request if comment_id is invalid', ()=>{
+           it('status:400 - reject patch request if comment_id is invalid', ()=>{
               return request(app)
               .patch('/api/comments/$$$')
               .send({inc_votes: 10})
@@ -480,7 +499,7 @@ describe('/api', ()=>{
                 expect(msg).toBe('Bad request')
              })
             })
-            it('status: 400, reject patch request if inc_votes key is an invalid data type', ()=>{
+            it('status:400 - reject patch request if inc_votes key is an invalid data type', ()=>{
               return request(app)
               .patch('/api/comments/3')
               .send({inc_votes: 'seven'})
@@ -489,7 +508,7 @@ describe('/api', ()=>{
                 expect(msg).toBe('Bad request')
              })
             })
-            it('status: 400, rejects malformed body', ()=>{
+            it('status:400 - rejects malformed body', ()=>{
               return request(app)
               .patch('/api/comments/1')
               .send({incorrect_property: 4})
@@ -498,7 +517,7 @@ describe('/api', ()=>{
                 expect(msg).toBe('Bad request')
              })
             })
-            it("status: 405, rejects invalid methods", ()=>{
+            it("status:405 - rejects invalid methods", ()=>{
               const invalidMethods = ['put']
               const methodPromises = invalidMethods.map((method)=>{
                 return request(app)
@@ -515,7 +534,7 @@ describe('/api', ()=>{
         })
       })
       describe('DELETE', ()=>{
-        it('status: 204, Deletes a comment by comment_id', ()=>{
+        it('status:204 - deletes a comment by comment_id', ()=>{
           return request(app)
           .delete('/api/comments/1')
           .expect(204)
@@ -530,7 +549,7 @@ describe('/api', ()=>{
           })
         })
         describe('Error', ()=>{
-          it('status: 404, reject delet request when comment_id is valid but not present ', ()=>{
+          it('status:404 - reject delete request when comment_id is valid but not present ', ()=>{
             return request(app)
             .delete('/api/comments/999')
             .expect(404)
@@ -538,7 +557,7 @@ describe('/api', ()=>{
               expect(msg).toBe('Comment does not exist')
            })
           })
-         it('status: 400, reject delete request if comment_id is invalid', ()=>{
+         it('status:400 - reject delete request if comment_id is invalid', ()=>{
             return request(app)
             .delete('/api/comments/$$$')
             .expect(400)
@@ -546,7 +565,7 @@ describe('/api', ()=>{
               expect(msg).toBe('Bad request')
            })
           })
-          it("status: 405, rejects invalid methods", ()=>{
+          it("status:405 - rejects invalid methods", ()=>{
             const invalidMethods = ['put']
             const methodPromises = invalidMethods.map((method)=>{
               return request(app)
