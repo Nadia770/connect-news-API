@@ -1,9 +1,9 @@
-const {fetchArticlesById, updateArticleById, createCommentByArticleId, fetchCommentByArticleId, checkIfArticleExits, fetchAllArticles} = require('../Models/articlesModel')
+const {fetchArticleById, updateArticleById, createCommentByArticleId, fetchCommentByArticleId, checkIfArticleExits, fetchAllArticles} = require('../Models/articlesModel')
 
 
-exports.getArticlesById = (req, res, next)=>{
+exports.getArticleById = (req, res, next)=>{
    const {article_id} = req.params
-   fetchArticlesById(article_id).then((articles)=>{
+   fetchArticleById(article_id).then((articles)=>{
       res.status(200).send({articles})
    })
    .catch((err)=>{

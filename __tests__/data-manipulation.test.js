@@ -1,4 +1,4 @@
-const { convertToUTC, createRef, formatItems } = require('./data-manipulation');
+const { convertToUTC, createRef, formatItems } = require('../db/utils/data-manipulation');
 
 describe('convertToUTC', () => {
   it('if passed an empty array it returns an empty array', () => {

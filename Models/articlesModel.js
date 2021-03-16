@@ -1,6 +1,6 @@
 const dbConnection = require('../db/dbConnection')
 
-exports.fetchArticlesById = (article_id)=>{
+exports.fetchArticleById = (article_id)=>{
     return dbConnection
     .select('articles.author',
             'articles.title', 
@@ -14,9 +14,9 @@ exports.fetchArticlesById = (article_id)=>{
     .leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
     .groupBy("articles.article_id")
     .where('articles.article_id', article_id)
-    .then((articles)=>{
-        if(!articles.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
-        else return articles
+    .then((article)=>{
+        if(!article.length) return Promise.reject({status: 404, msg: 'Article does not exist'})
+        else return article
     })
 };
 

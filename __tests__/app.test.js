@@ -1,8 +1,8 @@
 process.env.NODE_ENV = 'test'
 const request = require('supertest');
-const { patch } = require('./app');
-const app = require('./app')
-const dbConnection = require('./db/dbConnection')
+const { patch } = require('../app');
+const app = require('../app')
+const dbConnection = require('../db/dbConnection')
 
 afterAll(()=> dbConnection.destroy());
 //close connection to db once the tests are over
@@ -194,10 +194,8 @@ describe('/api', ()=>{
                           expect(msg).toBe('Bad request')
                        })
                       })
-                })
+                    })
                   })
-                
-         
               describe("/:article_id", ()=>{
                 describe('GET', ()=>{
                   it("status:200 - return specific article by article_id", ()=>{
