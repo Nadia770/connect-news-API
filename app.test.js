@@ -131,6 +131,26 @@ describe('/api', ()=>{
                       expect(body.articles).toBeSortedBy('title', {descending:true})
                       })
                   })
+                  it("status:200 - orders articles as specified", () => {
+                    return request(app)
+                      .get('/api/articles?order=asc')
+                      .expect(200)
+                      .then(({ body }) => {
+                        expect(body.articles).toBeSortedBy('created_at', {
+                          ascending: true
+                        })
+                      })
+                  })
+                  it("status:200 - sorts and orders articles as specified", () => {
+                    return request(app)
+                      .get('/api/articles?sort_by=author&order=asc')
+                      .expect(200)
+                      .then(({ body }) => {
+                        expect(body.articles).toBeSortedBy('author', {
+                          ascending: true
+                        })
+                      })
+                  })
                   it("status:200 - can filter artcles by author", ()=>{
                     return request(app)
                     .get('/api/articles?author=icellusedkars')

@@ -75,7 +75,7 @@ exports.checkIfArticleExits = (article_id)=>{
 };
 
 
-exports.fetchAllArticles = ({sort_by, author, topic})=>{
+exports.fetchAllArticles = ({sort_by, order, author, topic})=>{
   return dbConnection
   .select('articles.author',
           'articles.title', 
@@ -88,7 +88,7 @@ exports.fetchAllArticles = ({sort_by, author, topic})=>{
   .from('articles')
   .leftJoin('comments', 'comments.article_id', '=', 'articles.article_id')
   .groupBy("articles.article_id")
-  .orderBy(sort_by ||'created_at', 'desc')
+  .orderBy(sort_by ||'created_at', order || 'desc')
   .modify((querySoFar)=>{
     if(author !== undefined) querySoFar.where('articles.author', author)
     if(topic !== undefined) querySoFar.where('articles.topic', topic)
