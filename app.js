@@ -1,4 +1,5 @@
 const express =  require ('express');
+const cors = require('cors')
 const { handleCustomError, handle400s, handle500s } = require('./Error-Handlers/index.js');
 const app = express()
 const apiRouter = require('./Routers/apiRouter.js')
